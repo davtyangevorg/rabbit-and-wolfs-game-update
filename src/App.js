@@ -35,8 +35,8 @@ const App = () => {
             alert(`winner is a ${whoWin}`)
             if (whoWin === 'rabbit') setRabbitWinCount(prevState => prevState + 1)
             if (whoWin === 'wolf') setWolfsWinCount(prevState => prevState + 1)
-            setWhoWin(prevState => prevState = null)
-            setNewGameBoard(prevState => prevState = [])
+            setWhoWin(null)
+            setNewGameBoard([])
         }
     })
 
