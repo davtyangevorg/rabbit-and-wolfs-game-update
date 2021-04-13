@@ -1,3 +1,8 @@
+import HomeImage from './images/rabbit-home.png'
+import RabbitImage from './images/rabbit.png'
+import FenceImage from './images/fence.png'
+import WolfImage from './images/wolf.png'
+
 const randomUnique = (range, count) => {
     const nums = new Set()
     while (nums.size < count) {
@@ -12,17 +17,17 @@ export const generateBoard = (m, n, fenceQuantity, wolfQuantity) => {
     const herosesX = randomUnique(n, 2 + fenceQuantity + wolfQuantity)
 
     const boardMatrix = Array(m).fill().map((_, horizontalIndex) => Array(n).fill().map((_, i) => {
-        if (horizontalIndex === herosesY[0] && i === herosesX[0]) return 'home'
-        if (horizontalIndex === herosesY[1] && i === herosesX[1]) return 'rabbit'
+        if (horizontalIndex === herosesY[0] && i === herosesX[0]) return { name: 'home', img: HomeImage }
+        if (horizontalIndex === herosesY[1] && i === herosesX[1]) return { name: 'rabbit', img: RabbitImage, x: i, y: horizontalIndex }
         for (let j = 2; j < 2 + fenceQuantity; j++) {
-            if (horizontalIndex === herosesY[j] && i === herosesX[j]) return 'fence'
+            if (horizontalIndex === herosesY[j] && i === herosesX[j]) return { name: 'fence', img: FenceImage }
         }
         for (let j = 2 + fenceQuantity; j < 2 + fenceQuantity + wolfQuantity; j++) {
-            if (horizontalIndex === herosesY[j] && i === herosesX[j]) return `wolf`
+            if (horizontalIndex === herosesY[j] && i === herosesX[j]) return { name: 'wolf', img: WolfImage, x: i, y: horizontalIndex }
         }
         return null
     }))
-    return prevState => prevState = boardMatrix
+    return boardMatrix
 }
 
 export const moveHeroes = direction => prevState => {
@@ -44,57 +49,53 @@ export const moveHeroes = direction => prevState => {
 }
 
 function moveRabbit(matrix, heroesName, deltaX, deltaY, m, n) {
-    let y = null
-    let x = null
 
-    const nulledMatrix = matrix.map((row, i) => row.map((el, j) => {
-        if (el === heroesName) {
-            y = i
-            x = j
+    let heroes = null
+
+    const nulledMatrix = matrix.map(row => row.map(el => {
+        if (el?.name === heroesName) {
+            heroes = el
             return null
         }
         return el
     }))
-    let newY = (y + deltaY) < 0 ? m - 1 : (y + deltaY) === m ? 0 : y + deltaY
-    let newX = (x + deltaX) < 0 ? n - 1 : (x + deltaX) === n ? 0 : x + deltaX
+
+    let newY = (heroes.y + deltaY) < 0 ? m - 1 : (heroes.y + deltaY) === m ? 0 : heroes.y + deltaY
+    let newX = (heroes.x + deltaX) < 0 ? n - 1 : (heroes.x + deltaX) === n ? 0 : heroes.x + deltaX
 
     nulledMatrix.forEach((row, i) => row.forEach((el, j) => {
-        if (i === newY && j === newX && (el === 'fence' || el === 'wolf')) {
-            newY = y
-            newX = x
+        if (i === newY && j === newX && (el?.name === 'fence' || el?.name === 'wolf')) {
+            newY = heroes.y
+            newX = heroes.x
         }
     }))
 
     return nulledMatrix.map((row, i) => row.map((el, j) => {
-        if (i === newY && j === newX) return heroesName
+        if (i === newY && j === newX) return { ...heroes, x: newX, y: newY }
         return el
     }))
 }
 
 function moveWolf(matrix, heroesName, direction) {
-    let rabbitY = null
-    let rabbitX = null
-    let wolfY = []
-    let wolfX = []
-    let nulledMatrix = matrix.map((row, i) => row.map((el, j) => {
-        if (el === heroesName) {
-            wolfY.push(i)
-            wolfX.push(j)
+    let rabbit = null
+    let wolfsArray = []
+
+    let nulledMatrix = matrix.map(row => row.map(el => {
+        if (el?.name === heroesName) {
+            wolfsArray.push(el)
             return null
         }
-        if (el === 'rabbit') {
-            rabbitY = i
-            rabbitX = j
+        if (el?.name === 'rabbit') {
+            rabbit = el
         }
         return el
     }))
+    for (let i = 0; i < wolfsArray.length; i++) {
 
-    for (let i = 0; i < wolfY.length; i++) {
-
-        const { newY: newWolfY, newX: newWolfX } = generateWolfNextStep(rabbitY, rabbitX, wolfY[i], wolfX[i], direction, nulledMatrix)
+        const { newY: newWolfY, newX: newWolfX } = generateWolfNextStep(rabbit.y, rabbit.x, wolfsArray[i].y, wolfsArray[i].x, direction, nulledMatrix)
 
         nulledMatrix = nulledMatrix.map((row, horizontalIndex) => row.map((el, j) => {
-            if (horizontalIndex === newWolfY && j === newWolfX) return heroesName
+            if (horizontalIndex === newWolfY && j === newWolfX) return { ...wolfsArray[i], x: newWolfX, y: newWolfY }
             return el
         }))
     }
@@ -117,7 +118,7 @@ const generateWolfNextStep = (rabbitY, rabbitX, wolfY, wolfX, direction, matrix)
     }
 
     matrix.forEach((row, i) => row.forEach((el, j) => {
-        if (i === newY && j === newX && (el === 'home' || el === 'fence')) {
+        if (i === newY && j === newX && (el?.name === 'home' || el?.name === 'fence' || el?.name === 'wolf')) {
             newX = wolfX
             newY = wolfY
         }
@@ -127,8 +128,8 @@ const generateWolfNextStep = (rabbitY, rabbitX, wolfY, wolfX, direction, matrix)
 }
 
 export const findWinner = matrix => {
-    const isHomeFind = matrix.length > 0 ? [].concat(...matrix).indexOf('home') !== -1 : true
-    const isRabbitFind = matrix.length > 0 ? [].concat(...matrix).indexOf('rabbit') !== -1 : true
+    const isHomeFind = matrix.length > 0 ? [].concat(...matrix).findIndex(el => el?.name === 'home') !== -1 : true
+    const isRabbitFind = matrix.length > 0 ? [].concat(...matrix).findIndex(el => el?.name === 'rabbit') !== -1 : true
 
     if (!isHomeFind) return 'rabbit'
     if (!isRabbitFind) return 'wolf'

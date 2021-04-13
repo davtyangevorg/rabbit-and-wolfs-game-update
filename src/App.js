@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, useLayoutEffect } from 'react'
 
 import styled, { createGlobalStyle } from 'styled-components'
 
@@ -26,7 +26,7 @@ const App = () => {
     const [rabbitWinCount, setRabbitWinCount] = useState(0)
     const [wolfsWinCount, setWolfsWinCount] = useState(0)
 
-    useEffect(() => {
+    useLayoutEffect(() => {
         setWhoWin(() => findWinner(board))
     }, [board])
 
@@ -49,7 +49,7 @@ const App = () => {
                     setBoardSize={setBoardSize}
                 />
                 <StartGameButton
-                    onClick={() => setNewGameBoard(prevState => generateBoard(+boardSize[0], +boardSize[1], fenceQuantity, wolfQuantity)(prevState))}
+                    onClick={() => setNewGameBoard(generateBoard(+boardSize[0], +boardSize[1], fenceQuantity, wolfQuantity))}
                 >
                     Start Game
                 </StartGameButton>
