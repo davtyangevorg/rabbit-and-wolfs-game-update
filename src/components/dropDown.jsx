@@ -6,9 +6,9 @@ const DropDown = memo(({ options, setBoardSize }) => {
 
     return (
         <DropDownWrapper>
-            <select onChange={event => setBoardSize(prevState => prevState = event.target.value.split('x'))}>
+            <select onChange={event => setBoardSize({x:+event.target.value.split('x')[0],y:+event.target.value.split('x')[1]})}>
                 {options.map(el => {
-                    return <option key={el._id}>{el.value}</option>
+                    return <option key={el._id}>{el.value.x}x{el.value.y}</option>
                 })}
             </select>
         </DropDownWrapper>
