@@ -3,41 +3,33 @@ import RabbitImage from './images/rabbit.png'
 import FenceImage from './images/fence.png'
 import WolfImage from './images/wolf.png'
 
-export const generateBoard = (n, m, fenceQuantity, wolfQuantity) => {
-    const board = fillBoardInNumbers(n, m)
-    const randomNumbers = createRandomNumbers(n * m, 2 + fenceQuantity + wolfQuantity)
+const getRandomNumber = range => Math.floor(Math.random() * range)
 
-    const put = (board, q, name, img) => putHeroesInBoard(board, randomNumbers.splice(0, q), name, img, q)
-    const newBoard = put(put(put(put(board, 1, 'home', HomeImage), 1, 'rabbit', RabbitImage), fenceQuantity, 'fence', FenceImage), wolfQuantity, 'wolf', WolfImage)
+const getRandomCoordinate = board => {
+    const x = getRandomNumber(board[0].length)
+    const y = getRandomNumber(board.length)
 
-    return nulledBoard(newBoard)
+    if (board[x][y] === null) return [x, y]
+    return getRandomCoordinate(board)
 }
-const fillBoardInNumbers = (n, m) => {
-    let number = 0
-    const board = Array(n).fill().map(_ => Array(m).fill().map(el => {
-        number++
-        return number
-    }))
+
+const putHeroesInBoard = (board, hero, heroQuantity) => {
+    for (let i = 1; i <= heroQuantity; i++) {
+        const heroCoordinate = getRandomCoordinate(board)
+        board[heroCoordinate[0]][heroCoordinate[1]] = { ...hero, x: heroCoordinate[0], y: heroCoordinate[1] }
+    }
+}
+
+export const generateBoard = (n, m, wolfQuantity, fenceQuantity) => {
+    const board = Array(n).fill().map(_ => Array(m).fill(null))
+
+    putHeroesInBoard(board, { name: 'rabbit', img: RabbitImage }, 1)
+    putHeroesInBoard(board, { name: 'home', img: HomeImage }, 1)
+    putHeroesInBoard(board, { name: 'wolf', img: WolfImage }, wolfQuantity)
+    putHeroesInBoard(board, { name: 'fence', img: FenceImage }, fenceQuantity)
+
     return board
 }
-const createRandomNumbers = (range, count) => {
-    const nums = new Set()
-    while (nums.size < count) {
-        nums.add(Math.floor(Math.random() * range))
-    }
-    return [...nums]
-}
-const putHeroesInBoard = (board, number, heroesName, heroesImg, hereosQuantity) => {
-    let newBoard = [...board]
-    for (let k = 0; k < hereosQuantity; k++) {
-        board.forEach((row, i) => row.map((el, j) => {
-            if (el === number[k]) newBoard[i][j] = ({ name: heroesName, img: heroesImg, x: i, y: j })
-        }))
-    }
-    return newBoard
-}
-const nulledBoard = board => board.map(row => row.map(el => typeof el === 'number' ? null : el))
-
 export const moveHeroes = direction => prevState => {
     const move = (a, b) => moveWolf(moveRabbit(prevState, a, b, prevState.length, prevState[0].length), direction)
 
@@ -119,3 +111,4 @@ export const findWinner = board => {
     if (!isRabbitFind) return 'wolf'
     return null
 }
+

@@ -8,9 +8,9 @@ import BoardSizeDropDown from './components/dropDown.jsx'
 import GameBoard from './components/gameBoard.jsx'
 
 const boardSizeOptions = [
-    { _id: 1, value: {x:10,y:10} },
-    { _id: 2, value: {x:7,y:7} },
-    { _id: 3, value: {x:5,y:5} }
+    { _id: 1, value: { x: 10, y: 10 } },
+    { _id: 2, value: { x: 7, y: 7 } },
+    { _id: 3, value: { x: 5, y: 5 } }
 ]
 const IMAGE_HEIGTH = 80
 
@@ -20,13 +20,13 @@ const App = () => {
     const [board, setNewGameBoard] = useState([])
     const [whoWin, setWhoWin] = useState(null)
 
-    const fenceQuantity = Math.floor((boardSize.x+boardSize.y)*0.3-2)
-    const wolfQuantity = Math.floor((boardSize.x+boardSize.y)*0.3-2)
+    const fenceQuantity = Math.floor((boardSize.x + boardSize.y) * 0.3)
+    const wolfQuantity = Math.floor((boardSize.x + boardSize.y) * 0.3)
 
     const [rabbitWinCount, setRabbitWinCount] = useState(0)
     const [wolfsWinCount, setWolfsWinCount] = useState(0)
 
-    
+
 
     useLayoutEffect(() => {
         setWhoWin(() => findWinner(board))
@@ -40,7 +40,7 @@ const App = () => {
             setWhoWin(null)
             setNewGameBoard([])
         }
-    },[whoWin])
+    }, [whoWin])
 
     return (
         <div >
@@ -50,7 +50,7 @@ const App = () => {
                     setBoardSize={setBoardSize}
                 />
                 <StartGameButton
-                    onClick={() => setNewGameBoard(generateBoard(boardSize.x,boardSize.y,fenceQuantity,wolfQuantity))}
+                    onClick={() => setNewGameBoard(generateBoard(boardSize.x, boardSize.y, fenceQuantity, wolfQuantity))}
                 >
                     Start Game
                 </StartGameButton>
