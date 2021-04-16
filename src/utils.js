@@ -3,23 +3,6 @@ import RabbitImage from './images/rabbit.png'
 import FenceImage from './images/fence.png'
 import WolfImage from './images/wolf.png'
 
-const getRandomNumber = range => Math.floor(Math.random() * range)
-
-const getRandomCoordinate = board => {
-    const x = getRandomNumber(board[0].length)
-    const y = getRandomNumber(board.length)
-
-    if (board[x][y] === null) return [x, y]
-    return getRandomCoordinate(board)
-}
-
-const putHeroesInBoard = (board, hero, heroQuantity) => {
-    for (let i = 1; i <= heroQuantity; i++) {
-        const heroCoordinate = getRandomCoordinate(board)
-        board[heroCoordinate[0]][heroCoordinate[1]] = { ...hero, y: heroCoordinate[0], x: heroCoordinate[1] }
-    }
-}
-
 export const generateBoard = (n, m, wolfQuantity, fenceQuantity) => {
     const board = Array(n).fill().map(_ => Array(m).fill(null))
 
@@ -30,6 +13,22 @@ export const generateBoard = (n, m, wolfQuantity, fenceQuantity) => {
 
     return board
 }
+const putHeroesInBoard = (board, hero, heroQuantity) => {
+    for (let i = 1; i <= heroQuantity; i++) {
+        const heroCoordinate = getRandomCoordinate(board)
+        board[heroCoordinate[0]][heroCoordinate[1]] = { ...hero, y: heroCoordinate[0], x: heroCoordinate[1] }
+    }
+}
+const getRandomCoordinate = board => {
+    const x = getRandomNumber(board[0].length)
+    const y = getRandomNumber(board.length)
+
+    if (board[x][y] === null) return [x, y]
+    return getRandomCoordinate(board)
+}
+
+const getRandomNumber = range => Math.floor(Math.random() * range)
+
 export const moveHeroes = direction => prevState => {
     const move = (deltaX, deltaY) => moveWolf(moveRabbit(prevState, deltaX, deltaY, prevState.length, prevState[0].length), direction)
 
@@ -37,6 +36,12 @@ export const moveHeroes = direction => prevState => {
     if (direction === 'right') return move(1, 0)
     if (direction === 'up') return move(0, -1)
     if (direction === 'down') return move(0, 1)
+}
+function moveRabbit(board, deltaX, deltaY, m, n) {
+    const rabbit = getHeroesCoordinate('rabbit', board)[0]
+    const nulledBoard = resetElementInBoard('rabbit', board)
+    const [newX, newY] = getRabbitNextStep(rabbit, m, n, nulledBoard, deltaX, deltaY)
+    return nulledBoard.map((row, i) => row.map((el, j) => (i === newY && j === newX) ? { ...rabbit, x: newX, y: newY } : el))
 }
 
 const getHeroesCoordinate = (heroesName, board) => [].concat(...board).filter(el => el?.name === heroesName)
@@ -53,14 +58,6 @@ const getRabbitNextStep = (rabbit, m, n, nulledBoard, deltaX, deltaY) => {
         }
     }))
     return [newX, newY]
-}
-
-function moveRabbit(board, deltaX, deltaY, m, n) {
-    
-    const rabbit = getHeroesCoordinate('rabbit', board)[0]
-    const nulledBoard = resetElementInBoard('rabbit', board)
-    const [newX, newY] = getRabbitNextStep(rabbit, m, n, nulledBoard, deltaX, deltaY)
-    return nulledBoard.map((row, i) => row.map((el, j) => (i === newY && j === newX) ? { ...rabbit, x: newX, y: newY } : el))
 }
 
 function moveWolf(board, direction) {
