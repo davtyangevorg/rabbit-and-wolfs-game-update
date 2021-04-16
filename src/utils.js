@@ -31,7 +31,7 @@ export const generateBoard = (n, m, wolfQuantity, fenceQuantity) => {
     return board
 }
 export const moveHeroes = direction => prevState => {
-    const move = (a, b) => moveWolf(moveRabbit(prevState, a, b, prevState.length, prevState[0].length), direction)
+    const move = (deltaX, deltaY) => moveWolf(moveRabbit(prevState, deltaX, deltaY, prevState.length, prevState[0].length), direction)
 
     if (direction === 'left') return move(-1, 0)
     if (direction === 'right') return move(1, 0)
@@ -58,9 +58,8 @@ const getRabbitNextStep = (rabbit, m, n, nulledBoard, deltaX, deltaY) => {
 function moveRabbit(board, deltaX, deltaY, m, n) {
     const rabbit = getHeroesCoordinate('rabbit', board)[0]
     const nulledBoard = resetElementInBoard('rabbit', board)
-
+    console.log(rabbit)
     const [newX, newY] = getRabbitNextStep(rabbit, m, n, nulledBoard, deltaX, deltaY)
-
     return nulledBoard.map((row, i) => row.map((el, j) => (i === newY && j === newX) ? { ...rabbit, x: newX, y: newY } : el))
 }
 
@@ -111,4 +110,3 @@ export const findWinner = board => {
     if (!isRabbitFind) return 'wolf'
     return null
 }
-
