@@ -16,7 +16,7 @@ const getRandomCoordinate = board => {
 const putHeroesInBoard = (board, hero, heroQuantity) => {
     for (let i = 1; i <= heroQuantity; i++) {
         const heroCoordinate = getRandomCoordinate(board)
-        board[heroCoordinate[0]][heroCoordinate[1]] = { ...hero, x: heroCoordinate[0], y: heroCoordinate[1] }
+        board[heroCoordinate[0]][heroCoordinate[1]] = { ...hero, y: heroCoordinate[0], x: heroCoordinate[1] }
     }
 }
 
@@ -56,6 +56,7 @@ const getRabbitNextStep = (rabbit, m, n, nulledBoard, deltaX, deltaY) => {
 }
 
 function moveRabbit(board, deltaX, deltaY, m, n) {
+    
     const rabbit = getHeroesCoordinate('rabbit', board)[0]
     const nulledBoard = resetElementInBoard('rabbit', board)
     const [newX, newY] = getRabbitNextStep(rabbit, m, n, nulledBoard, deltaX, deltaY)
