@@ -58,7 +58,6 @@ const getRabbitNextStep = (rabbit, m, n, nulledBoard, deltaX, deltaY) => {
 function moveRabbit(board, deltaX, deltaY, m, n) {
     const rabbit = getHeroesCoordinate('rabbit', board)[0]
     const nulledBoard = resetElementInBoard('rabbit', board)
-    console.log(rabbit)
     const [newX, newY] = getRabbitNextStep(rabbit, m, n, nulledBoard, deltaX, deltaY)
     return nulledBoard.map((row, i) => row.map((el, j) => (i === newY && j === newX) ? { ...rabbit, x: newX, y: newY } : el))
 }
