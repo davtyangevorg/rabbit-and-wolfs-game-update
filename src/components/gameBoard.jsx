@@ -7,15 +7,14 @@ import { moveHeroes } from '../utils.js'
 
 import Square from './square.jsx'
 
-const directions = ['left','right','up','down']
+const directions = ['left', 'right', 'up', 'down']
 
 const GameBoard = ({ board, setNewGameBoard, boardWidth }) => {
-
+    
     useKeyPress(event => {
         const direction = event.key.replace('Arrow', '').toLowerCase()
         if (directions.includes(direction)) return setNewGameBoard(prevState => moveHeroes(direction)(prevState))
     })
-
     return (
         <GameBoardWrapper boardWidth={boardWidth}>
             {board.map(array => {

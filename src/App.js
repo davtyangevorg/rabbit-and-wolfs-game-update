@@ -26,8 +26,6 @@ const App = () => {
     const [rabbitWinCount, setRabbitWinCount] = useState(0)
     const [wolfsWinCount, setWolfsWinCount] = useState(0)
 
-
-
     useLayoutEffect(() => {
         setWhoWin(() => findWinner(board))
     }, [board])
