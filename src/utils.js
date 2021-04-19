@@ -60,12 +60,13 @@ function moveRabbit(board, deltaSteps) {
     return board
 }
 export const moveHeroes = direction => board => {
-    const copyBoard = [...board]
+    let copyBoard = [...board]
     const move = (deltaX, deltaY) => moveRabbit(copyBoard, [deltaX, deltaY])
-    if (direction === 'left') return moveWolf(move(-1, 0))
-    if (direction === 'right') return moveWolf(move(1, 0))
-    if (direction === 'up') return moveWolf(move(0, -1))
-    if (direction === 'down') return moveWolf(move(0, 1))
+    if (direction === 'left') copyBoard = move(-1, 0)
+    if (direction === 'right') copyBoard = move(1, 0)
+    if (direction === 'up') copyBoard = move(0, -1)
+    if (direction === 'down') copyBoard = move(0, 1)
+    return moveWolf(copyBoard)
 }
 
 const getAllPossibleCoordinates = (wolfCoordinates, board) => {
